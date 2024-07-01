@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: csir-npl-django-backend
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn CSIR_NPL.asgi:application --host 0.0.0.0 --port 8001
+    envVars:
+      - key: SECRET_KEY
+        value: 'django-insecure--n0$aj!k-@u7+p6$#2wwol&kdgr=^4@+p8&qsbr-a_p^=l9%12'
+      - key: DATABASE_URL
+        value: YOUR_DATABASE_URL
+      - key: DJANGO_DEBUG
+        value: "false"
+    envSecrets:
+      - key: DATABASE_PASSWORD
+        name: database-password
+    disk:
+      - mountPath: /var/lib/django
+        sizeGB: 1
+    routes:
+      - type: rewrite
+        source: /.*
+        destination: /static/$1
+      - type: rewrite
+        source: /static/.*
+        destination: /$1
